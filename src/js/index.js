@@ -1,13 +1,11 @@
-
-//import { file, parse } from './global.js';
+'use strict'
+var _ = require("lodash");
 function component() {
-    var element = document.createElement('div');
+    var element = document.createElement("div");
 
     // Lodash（目前通过一个 script 脚本引入）对于执行这一行是必需的
-    element.innerHTML = _.join(['Hello', 'webpack'], ' ');
-    element.classList.add('hello');
-
-
+    element.innerHTML = _.join(["Hello", "webpack"], " ");
+    element.classList.add("hello");
     return element;
 }
 

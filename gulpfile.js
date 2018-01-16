@@ -6,18 +6,15 @@ var connect = require('gulp-connect');
 // 引入组件
 var minifycss = require('gulp-minify-css'),//css压缩
     concat = require('gulp-concat'),//文件合并
-    rename = require('gulp-rename'),//文件更名
     notify = require('gulp-notify');//提示信息
 var rev = require('gulp-rev'),
-    revC = require('gulp-rev-collector'),
-    RevAll = require('gulp-rev-all'),
-    cssMin = require('gulp-csso')
-
-
+    revC = require('gulp-rev-collector')
+const eslint = require('gulp-eslint');
 var rest = require('connect-rest');
 var src = {
     html: "src/html/*.html",                          // html 文件
     vendor: ["src/vendor/**/*", "bower_components/**/*"], // vendor 目录和 bower_components
+    jspath: ["src/js/**/*.js", "src/js/*.js"],
     style: "src/css/*.css",                  // style 目录下所有 xx/index.less
     assets: "src/assets/**/*"                             // 图片等应用资源
 };
@@ -27,7 +24,7 @@ var dist = {
     html: "dist/templates",
     style: "dist/static/css",
     vendor: "dist/static/vendor",
-    assets: "dist/static/assets"
+    assets: "dist/static/assets",
 };
 
 var bin = {
@@ -35,7 +32,7 @@ var bin = {
     html: "bin/templates",
     style: "bin/static/css",
     vendor: "bin/static/vendor",
-    assets: "bin/astatic/ssets"
+    assets: "bin/astatic/ssets",
 };
 
 /**
@@ -114,6 +111,7 @@ function style() {
 }
 
 exports.style = style;
+
 function styledev() {
     return gulp.src('src/css/*.css')
         .pipe(concat('main.css'))
@@ -146,9 +144,9 @@ function connectServer(done) {
         livereload: true,
         middleware: function (connect, opt) {
             return [rest.rester({
-                context: "/"
+                context: "/",
             })]
-        }
+        },
     });
     done();
 }
@@ -172,6 +170,7 @@ function watch() {
  */
 gulp.task("default", gulp.series(
     clean,
+    checkjs,
     gulp.parallel(copyAssets, copyVendor, styledev, webpackDevelopment,),
     revHtml,
     connectServer,
@@ -183,6 +182,7 @@ gulp.task("default", gulp.series(
  */
 gulp.task("build", gulp.series(
     clean,
+    checkjs,
     gulp.parallel(copyAssets, copyVendor, style, webpackProduction),
     revHtml,
     cleanBin,
@@ -215,11 +215,20 @@ function reload() {
     connect.reload();
 }
 
+function checkjs() {
+    return gulp.src(src.jspath)
+        .pipe(eslint())
+        .pipe(eslint.formatEach('compact', process.stderr))
+        .pipe(eslint.failAfterError());
+}
+
+exports.checkjs = checkjs;
+
 function webpackDevelopment() {
     return gulp.src('src/js/index.js')
         .pipe(webpack({
             config: require('./webpack.common.js'),
-            config: require('./webpack.dev.js')
+            config: require('./webpack.dev.js'),
         }))
         .pipe(rev())
         .pipe(gulp.dest('dist/static/js'))
@@ -236,7 +245,7 @@ function webpackProduction() {
     return gulp.src('src/js/index.js')
         .pipe(webpack({
             config: require('./webpack.common.js'),
-            config: require('./webpack.prod.js')
+            config: require('./webpack.prod.js'),
         }))
         .pipe(rev())
         .pipe(gulp.dest('dist/static/js'))

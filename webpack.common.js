@@ -1,14 +1,14 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 var ROOT_PATH = __dirname;
 
 var fs = require('fs');
 var SOURCES_PATH = path.join(ROOT_PATH, 'src/js');
+var ASSET_PATH = path.join(ROOT_PATH, 'src/assets/js');
 var NODE_PATH = path.join(ROOT_PATH, 'node_modules');
 var resolve = {
-    modules: [SOURCES_PATH, ROOT_PATH, NODE_PATH]
+    modules: [SOURCES_PATH, ROOT_PATH, NODE_PATH,ASSET_PATH]
 };
 
 var externals = [
@@ -28,7 +28,7 @@ function getEntry(jspath, key) {
     var matchs = [], files = [];
     dirs.forEach(function (item) {
         matchs = item.match(/(.+)\.js$/);
-       // console.log(matchs);
+        // console.log(matchs);
         if (matchs) {
             files.push(path.resolve(jspath, key, item));
         }
@@ -44,19 +44,25 @@ module.exports = {
     entry: {
         'common/common': commonjs,
         main: mainjs,
-        users:usersjs,
-        vendor: ["jquery"]
+        users: usersjs
+
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
-        new webpack.optimize.CommonsChunkPlugin({names: ["vendor"]})
+        new webpack.optimize.CommonsChunkPlugin({names: ["vendor"]}),
+        new webpack.ProvidePlugin({
+            "$": "jquery",
+            "jQuery": "jquery",
+            "window.jQuery": "jquery"
+        })
     ],
-    externals:externals,
+    externals: externals,
     output: {
         filename: '[name].js',//.[chunkhash]
         chunkFilename:
             "[name].[chunkhash].js",
-        path: path.resolve(__dirname, 'dist/static/js/')
+        path: path.resolve(__dirname, 'dist/static/js/'),
+        libraryTarget: 'umd'
     },
     resolve: resolve
 };
