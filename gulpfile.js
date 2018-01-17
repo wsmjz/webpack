@@ -21,7 +21,7 @@ var src = {
 
 var dist = {
     root: "dist/",
-    html: "dist/templates",
+    html: "dist/",
     style: "dist/static/css",
     vendor: "dist/static/vendor",
     assets: "dist/static/assets",
@@ -48,7 +48,7 @@ function clean(done) {
     del.sync(dist.root);
     done();
 }
-
+exports.clean = clean;
 /**
  * [cleanBin description]
  * @return {[type]} [description]

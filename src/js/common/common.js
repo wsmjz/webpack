@@ -10,14 +10,13 @@ const urljs = function urljs() {
 
 // 获取ip和端口
 function getHost() {
-    return window.location.host;// +":"+window.location.port
+    return  "192.168.2.150:444";// window.location.host;":"+window.location.port
 }
 exports.getHost = getHost;
 
 function commonpostjson(func, jsondata, callback) {
 
     var usrl = urljs() + func;
-
     $.ajax({
         url: usrl,
         type: "post",

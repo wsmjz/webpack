@@ -1,13 +1,27 @@
 'use strict'
-var _ = require("lodash");
-function component() {
-    var element = document.createElement("div");
+//var _ = require("lodash");
+var $ = require("jquery");
+var common = require("src/js/common/common");
+require("src/assets/js/jquery.cookie");
+
+function indexinit() {
+
+    var username = $.cookie("username");
+    if (username === undefined) {
+        window.location.href = "/login.html";
+        return;
+    }
+    console.log(username);
+   $("#content").val(username);
+    return common.getHost();
 
     // Lodash（目前通过一个 script 脚本引入）对于执行这一行是必需的
-    element.innerHTML = _.join(["Hello", "webpack"], " ");
-    element.classList.add("hello");
-    return element;
+    //var innerHTML = _.join(["Hello", "webpack", username], " ");
+    //return innerHTML;
 }
 
-document.body.appendChild(component());
+exports.indexinit = indexinit ;
+
+
+
 

@@ -8,7 +8,11 @@ var SOURCES_PATH = path.join(ROOT_PATH, 'src/js');
 var ASSET_PATH = path.join(ROOT_PATH, 'src/assets/js');
 var NODE_PATH = path.join(ROOT_PATH, 'node_modules');
 var resolve = {
-    modules: [SOURCES_PATH, ROOT_PATH, NODE_PATH,ASSET_PATH]
+    modules: [SOURCES_PATH, ROOT_PATH, NODE_PATH,ASSET_PATH],
+    alias: {
+        //  也可以不写
+        jquery: 'src/assets/js/jquery.min.js',
+    }
 };
 
 var externals = [
@@ -49,12 +53,10 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
-        new webpack.optimize.CommonsChunkPlugin({names: ["vendor"]}),
-        new webpack.ProvidePlugin({
-            "$": "jquery",
-            "jQuery": "jquery",
-            "window.jQuery": "jquery"
-        })
+        new webpack.optimize.CommonsChunkPlugin({
+                   name: 'vendor' // 指定公共 bundle 的名称。
+      })
+
     ],
     externals: externals,
     output: {
